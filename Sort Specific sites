@@ -1,0 +1,31 @@
+# for file in *.fasta; do seqkit seq -s "$file" -o "${file%.fasta}.txt"; done
+def extract_columns_char(input_file, output_file, column_indices):
+    """
+    Extracts specified columns from a text file where each column is a single character
+    and saves them to a new file.
+
+    :param input_file: Path to the input text file.
+    :param output_file: Path to the output text file.
+    :param column_indices: A list of column indices to extract (1-based index).
+    """
+    try:
+        with open(input_file, 'r') as file:
+            lines = file.readlines()
+
+        with open(output_file, 'w') as file:
+            for line in lines:
+                # Extract the characters at the specified column indices
+                extracted_chars = [line[idx-1] for idx in column_indices if idx-1 < len(line.strip())]
+                # Join the extracted characters and write to the output file
+                file.write(''.join(extracted_chars) + '\n')
+
+        print(f"Data from columns {column_indices} has been extracted and saved to {output_file}.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+# Example usage:
+input_file_path = r'C:\\aaaIMCAS\\PATH\\cow-OH12.txt'  # Input file path
+output_file_path = r'C:\\aaaIMCAS\\PATH\\cow-OH12_site.txt'  #  Output file path
+column_indices = [627，631 ]  # Specific sites (1-based index)
+
+extract_columns_char(input_file_path, output_file_path, column_indices)
