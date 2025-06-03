@@ -1,0 +1,5 @@
+conda activate lyr
+cd $PATH
+#sequence alignment
+for file in *.fasta; do mafft --auto "$file" > "${file%.fasta}_mafft.fasta"; done
+
