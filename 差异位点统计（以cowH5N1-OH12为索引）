@@ -1,0 +1,74 @@
+import math
+
+def count_columns_with_index(file_path, index_path, output_path):
+    try:
+        # 读取索引文件，即cowH5N1-OH12
+        with open(index_path, 'r') as index_file:
+            # 确保索引文件只有一行
+            index_line = index_file.readline().strip()
+
+        # 读取输入文件
+        with open(file_path, 'r') as file:
+            lines = file.readlines()
+
+        # 检查数据文件是否为空
+        if not lines:
+            print("error:数据文件为空")
+            return
+
+        # 获取总行数
+        total_lines = len(lines)
+
+        # 获取列数
+        num_columns = len(index_line)
+
+        # 初始化存储结果的列表
+        results = []
+
+        # 遍历每一列
+        for col_index in range(num_columns):
+            index_char = index_line[col_index]
+            # 跳过'X'
+            if index_char == 'X':
+                continue
+
+            # 初始化计数器
+            count_dict = {}
+            # 遍历每一行
+            for line in lines:
+                # 去除行尾的换行符
+                line = line.strip()
+                # 获取当前列的字符
+                char = line[col_index]
+                # 跳过'X'
+                if char == 'X':
+                    continue
+                # 统计与索引字符不同的字符（与OH12不同的氨基酸）
+                if char != index_char:
+                    if char not in count_dict:
+                        count_dict[char] = 0
+                    count_dict[char] += 1
+
+            # 将结果添加到列表中
+            for letter, count in count_dict.items():
+                prob = count / total_lines
+                log10_prob = math.log10(prob) if prob > 0 else float('-inf')  # 对数函数在0处未定义，使用负无穷表示
+                results.append((col_index + 1, letter, count, f"{index_char}{col_index + 1}{letter}", prob, log10_prob))
+
+        # 写入结果
+        with open(output_path, 'w') as output_file:
+            # 写入表头
+            output_file.write("Site\taa\tCount\tMut\tProb\tRange\n")
+            # 写入结果
+            for result in results:
+                output_file.write(f"{result[0]}\t{result[1]}\t{result[2]}\t{result[3]}\t{result[4]:.4f}\t{result[5]:.4f}\n")
+
+        print(f"Result successfully saved in {output_path}")
+    except Exception as e:
+        print(f"error: {e}")
+
+
+file_path = r'C:\\aaaIMCAS\\PATH\\cow.txt'  # 输入文件路径
+index_path = r'C:\\aaaIMCAS\\PATH\\cow-OH12.txt' # 索引文件路径
+output_path = r'C:\\aaaIMCAS\\PATH\\output.txt'  # 输出文件路径
+count_columns_with_index(file_path, index_path, output_path)
